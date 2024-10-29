@@ -897,6 +897,33 @@ class GenerationMixin(object):
         min_len = input_len + min_length
         max_len = input_len + max_length
 
+        total_max_length = None
+        names = [
+            "total_max_length",
+            "max_seq_len",
+            "max_position_embeddings",
+            "max_sequence_length",
+            "seq_length",
+        ]    
+        for name in names:
+            total_max_length = self.config.get(name, None)
+            if total_max_length is not None:
+                break
+        if total_max_length is None:
+            total_max_length = input_len + max_length
+            logger.warning(
+                f"Can not retrieval `total_max_length` from config.json, use default value {total_max_length}"
+            )
+        else:
+            if max_len > total_max_length:
+                max_len = total_max_length
+                logger.warning(
+                    f"The sum of src_length<{input_len}> and "
+                    f"max_new_tokens<{max_length}> is large than "
+                    f"the total_max_length size<{total_max_length}>"
+                    f"can only generate a sequence with a length of {total_max_length}"
+                )
+
         logits_processors = self.get_logits_processor(
             min_length=min_len if min_length > 0 else None,
             max_length=max_len,
