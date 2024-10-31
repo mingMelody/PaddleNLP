@@ -904,7 +904,7 @@ class GenerationMixin(object):
             "max_position_embeddings",
             "max_sequence_length",
             "seq_length",
-        ]    
+        ]
         for name in names:
             total_max_length = self.config.get(name, None)
             if total_max_length is not None:
